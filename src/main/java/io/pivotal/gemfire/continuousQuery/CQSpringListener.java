@@ -23,8 +23,10 @@ public class CQSpringListener {
 
     public void handleEvent(CqEvent event) {
         PdxInstanceImpl pdxInstance = (PdxInstanceImpl) event.getNewValue();
+
         Envelope envelope = (io.pivotal.gemfire.domain.Envelope)pdxInstance.getObject();
         envelope.setContinousQueryReceivedTimestamp(Calendar.getInstance().getTime());
+
         log.info("Received a CQ event " + envelope.getKey()+ " "+ envelope.getOrigin());
         CQRepository.addCQResult(envelope);
     }

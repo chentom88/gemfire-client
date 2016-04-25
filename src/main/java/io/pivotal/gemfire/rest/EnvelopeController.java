@@ -47,6 +47,22 @@ public class EnvelopeController {
         }
     }
 
+    @RequestMapping("/searchCQEnvelope")
+    String searchCQ(@RequestParam(required = true) String key) {
+        try {
+            Envelope envelope = producer.getCQEnvelope(key);
+
+            if(envelope != null) {
+                return "Event delay was " + (envelope.getContinousQueryReceivedTimestamp().getTime() - envelope.getTimestamp().getTime()) + " ms";
+            }else{
+                return "Gave up waiting for the continuous query to pop.";
+            }
+        } catch (Exception e)
+        {
+            return "An exception occured " + e.getMessage();
+        }
+    }
+
     @RequestMapping("/insertRate")
     String getInsertRate(){
         return gemfireInsertRate.monitor();

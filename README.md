@@ -1,1 +1,1 @@
-# gemfire-prototype
+# gemfire-client prototype

@@ -49,14 +49,15 @@ public class EnvelopeProducer {
 
     public List<String> createEnvelopes(long count){
         long envelopeCounter = 0;
+
         List<String> rates = new ArrayList<String>();
         System.out.println("Running Producer with random Identifier: "+randomIdentifier);
         long startTime = System.nanoTime();
 
-        while(true && envelopeCounter < count){
-            envelopeCounter++;
-            Envelope envelope = generateRandomEnvelope(envelopeCounter);
+        while(envelopeCounter++ < count){
+            Envelope envelope = generateRandomEnvelope();
             envelopeService.insert(envelope);
+
             if(envelopeCounter % STATISTICS_CHUNK == 0) {
                 long estimatedTime = System.nanoTime() - startTime;
                 if(TimeUnit.NANOSECONDS.toMillis(estimatedTime) == 0){
@@ -71,17 +72,28 @@ public class EnvelopeProducer {
     }
 
     public Envelope sendCQEnvelope() {
-        long startTime = System.nanoTime();
-        Envelope envelope = generateRandomEnvelope(0, "james");
+        Envelope envelope = generateRandomEnvelope("james");
         envelopeService.insert(envelope);
 
-        boolean notFound = true;
+        return getCQEnvelope(envelope.getKey());
+    }
+
+    public Envelope getCQEnvelope(String key) {
+        long startTime = System.nanoTime();
         long elapsedTime = 0L;
         Envelope cqEnvelope = null;
-        while(notFound && elapsedTime < 60L){
-            cqEnvelope = CQRepository.getCQResult(envelope.getKey());
+
+        while(elapsedTime < 60L){
+            cqEnvelope = CQRepository.getCQResult(key);
             if(cqEnvelope != null){
-                notFound = false;
+                break;
+            }
+
+            try {
+                Thread.sleep(500);
+            } catch(Exception e)
+            {
+
             }
 
             elapsedTime = TimeUnit.NANOSECONDS.toSeconds((System.nanoTime() - startTime));
@@ -90,11 +102,11 @@ public class EnvelopeProducer {
         return cqEnvelope;
     }
 
-    private Envelope generateRandomEnvelope(long envelopeCounter) {
-        return generateRandomEnvelope(envelopeCounter, "bob");
+    private Envelope generateRandomEnvelope() {
+        return generateRandomEnvelope("bob");
     }
 
-    private Envelope generateRandomEnvelope(long envelopeCounter, String origin) {
+    private Envelope generateRandomEnvelope(String origin) {
         String key  = randomIdentifier + "-" + UUID.randomUUID().toString();
 
         String eventType = "myEventType";

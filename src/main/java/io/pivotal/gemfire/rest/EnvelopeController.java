@@ -15,7 +15,7 @@ public class EnvelopeController {
     EnvelopeProducer producer;
 
     @Autowired
-    GemfireInsertRate gemfireInsertRate;
+    InsertRateMonitor gemfireInsertRate;
 
     @Autowired
     CQRepository CQRepository;
@@ -32,7 +32,7 @@ public class EnvelopeController {
     }
 
     @RequestMapping("/createCQEnvelope")
-    String sendCQEnvelope() {
+    String createCQ() {
         try {
             Envelope envelope = producer.sendCQEnvelope();
 

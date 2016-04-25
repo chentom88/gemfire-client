@@ -12,8 +12,8 @@ import java.util.concurrent.TimeUnit;
  * Created by pivotal on 4/22/16.
  */
 @Component
-public class GemfireInsertRate {
-    private static Log log = LogFactory.getLog(GemfireInsertRate.class);
+public class InsertRateMonitor {
+    private static Log log = LogFactory.getLog(InsertRateMonitor.class);
 
     @Autowired
     EnvelopeService envelopeService;
